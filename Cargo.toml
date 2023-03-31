@@ -1,0 +1,34 @@
+[package]
+name = "qcrosvm"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "qcrosvm"
+path = "src/main.rs"
+[profile.release]
+overflow-checks = true
+#[features]
+#default = []
+
+[dependencies]
+android_logger = { path = "../../../../external/rust/crates/android_logger" }
+base = { path = "../../../../external/crosvm/base" }
+crosvm = { path = "../../../../external/crosvm" }
+hypervisor = { path = "../../../../external/crosvm/hypervisor" }
+#crosvm = { path = "../../../../recipe-sysroot/usr/lib/rust/", artifact = ["lib:libcrosvm"] }
+devices = { path = "../../../../external/crosvm/devices" }
+disk = { path = "../../../../external/crosvm/disk" }
+libc = "0.2.93"
+log = "*"
+mmio = { path = "mmio" }
+simplelog = { path = "../../../../external/rust/crates/simplelog" }
+sync = { path = "../../../../external/crosvm/common/sync" }
+sys_util = { path = "../../../../external/crosvm/common/sys_util" }
+vm_memory = { path = "../../../../external/crosvm/vm_memory" }
+minijail = { path = "../../../../external/minijail/rust/minijail" }
+vhost = { path = "../../../../external/crosvm/vhost" }
+net_util = { path = "../../../../external/crosvm/net_util" }
+virtio_sys = { path = "../../../../external/crosvm/virtio_sys" }
