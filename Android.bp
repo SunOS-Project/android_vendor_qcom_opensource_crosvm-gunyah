@@ -60,18 +60,17 @@ rust_binary {
 
     rustlibs: [
         "libbase_rust",
-        "libcrosvm",
         "libdevices",
         "libdisk",
         "liblibc",
         "libvm_memory",
-        "libmmio",
         "libsync_rust",
         "libandroid_logger",
         "liblog_rust",
         "libminijail_rust",
-	"libsimplelog",
-	"libhypervisor",
+        "libsimplelog",
+        "libhypervisor",
+        "libthiserror",
     ],
 }
 
