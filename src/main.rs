@@ -339,30 +339,30 @@ enum VmIoctl {
 fn to_cmd(ioc: VmIoctl, version: u8) -> std::result::Result<i32, BackendError> {
 	match version {
 		2 => match ioc {
-			VmIoctl::IoEventFd => Ok(IOEVENTFD_V2()),
-			VmIoctl::IrqFd => Ok(IRQFD_V2()),
-			VmIoctl::WaitForEvent => Ok(WAIT_FOR_EVENT_V2()),
-			VmIoctl::SetDeviceFeatures => Ok(SET_DEVICE_FEATURES_V2()),
-			VmIoctl::SetQueueNumMax => Ok(SET_QUEUE_NUM_MAX_V2()),
-			VmIoctl::SetDeviceConfigData => Ok(SET_DEVICE_CONFIG_DATA_V2()),
-			VmIoctl::GetDriverConfigData => Ok(GET_DRIVER_CONFIG_DATA_V2()),
-			VmIoctl::GetQueueInfo => Ok(GET_QUEUE_INFO_V2()),
-			VmIoctl::GetDriverFeatures => Ok(GET_DRIVER_FEATURES_V2()),
-			VmIoctl::AckDriverOk => Ok(ACK_DRIVER_OK_V2()),
-			VmIoctl::AckReset => Ok(ACK_RESET_V2()),
+			VmIoctl::IoEventFd => Ok(IOEVENTFD_V2),
+			VmIoctl::IrqFd => Ok(IRQFD_V2),
+			VmIoctl::WaitForEvent => Ok(WAIT_FOR_EVENT_V2),
+			VmIoctl::SetDeviceFeatures => Ok(SET_DEVICE_FEATURES_V2),
+			VmIoctl::SetQueueNumMax => Ok(SET_QUEUE_NUM_MAX_V2),
+			VmIoctl::SetDeviceConfigData => Ok(SET_DEVICE_CONFIG_DATA_V2),
+			VmIoctl::GetDriverConfigData => Ok(GET_DRIVER_CONFIG_DATA_V2),
+			VmIoctl::GetQueueInfo => Ok(GET_QUEUE_INFO_V2),
+			VmIoctl::GetDriverFeatures => Ok(GET_DRIVER_FEATURES_V2),
+			VmIoctl::AckDriverOk => Ok(ACK_DRIVER_OK_V2),
+			VmIoctl::AckReset => Ok(ACK_RESET_V2),
 		}
 		1 => match ioc {
-			VmIoctl::IoEventFd => Ok(IOEVENTFD_V1()),
-			VmIoctl::IrqFd => Ok(IRQFD_V1()),
-			VmIoctl::WaitForEvent => Ok(WAIT_FOR_EVENT_V1()),
-			VmIoctl::SetDeviceFeatures => Ok(SET_DEVICE_FEATURES_V1()),
-			VmIoctl::SetQueueNumMax => Ok(SET_QUEUE_NUM_MAX_V1()),
-			VmIoctl::SetDeviceConfigData => Ok(SET_DEVICE_CONFIG_DATA_V1()),
-			VmIoctl::GetDriverConfigData => Ok(GET_DRIVER_CONFIG_DATA_V1()),
-			VmIoctl::GetQueueInfo => Ok(GET_QUEUE_INFO_V1()),
-			VmIoctl::GetDriverFeatures => Ok(GET_DRIVER_FEATURES_V1()),
-			VmIoctl::AckDriverOk => Ok(ACK_DRIVER_OK_V1()),
-			VmIoctl::AckReset => Ok(ACK_RESET_V1()),
+			VmIoctl::IoEventFd => Ok(IOEVENTFD_V1),
+			VmIoctl::IrqFd => Ok(IRQFD_V1),
+			VmIoctl::WaitForEvent => Ok(WAIT_FOR_EVENT_V1),
+			VmIoctl::SetDeviceFeatures => Ok(SET_DEVICE_FEATURES_V1),
+			VmIoctl::SetQueueNumMax => Ok(SET_QUEUE_NUM_MAX_V1),
+			VmIoctl::SetDeviceConfigData => Ok(SET_DEVICE_CONFIG_DATA_V1),
+			VmIoctl::GetDriverConfigData => Ok(GET_DRIVER_CONFIG_DATA_V1),
+			VmIoctl::GetQueueInfo => Ok(GET_QUEUE_INFO_V1),
+			VmIoctl::GetDriverFeatures => Ok(GET_DRIVER_FEATURES_V1),
+			VmIoctl::AckDriverOk => Ok(ACK_DRIVER_OK_V1),
+			VmIoctl::AckReset => Ok(ACK_RESET_V1),
 		}
 		_ => Err(BackendError::StrError(String::from("Unsupported driver variant."))),
 	}
@@ -799,7 +799,7 @@ fn set_minijail(policy: &str) -> Result<(), ()> {
 fn create_vcpus(cfg: &mut BackendConfig) -> std::result::Result<(), BackendError> {
 	let vm_sfd = cfg.vm_sfd.as_ref().expect(&format!("{}:{}", file!(), line!()));
 	for vcpu_id in 0..cfg.vcpu_count{
-		let vcpu_fd = unsafe { libc::ioctl(vm_sfd.as_raw_descriptor(), GH_CREATE_VCPU(), vcpu_id as c_uint) };
+		let vcpu_fd = unsafe { libc::ioctl(vm_sfd.as_raw_descriptor(), GH_CREATE_VCPU, vcpu_id as c_uint) };
 		if vcpu_fd < 0 {
 			return Err(BackendError::StrNumError {
 				err: String::from("create vcpu ioctl failed"),
@@ -816,7 +816,7 @@ fn run_a_vcpu(vcpu_rawfd: i32, cpu_id: u8, vm_name: &str) -> std::result::Result
         .name(format!("{}_vcpu{}", vm_name, cpu_id));
     let vm = vm_name.to_string();
     builder.spawn(move || {
-        let ret = unsafe { libc::ioctl(vcpu_rawfd, GH_VCPU_RUN()) };
+        let ret = unsafe { libc::ioctl(vcpu_rawfd, GH_VCPU_RUN) };
         if ret == 0 {
             error!("{}", format!("{}_vcpu{} returned 0", vm, cpu_id));
             std::process::exit(0);
@@ -847,7 +847,7 @@ fn run_vcpus(cfg: &mut BackendConfig) ->  std::result::Result<(), BackendError> 
 
 fn set_user_memory_region(cfg: &mut BackendConfig, vm_name: String, fw_name: fw_name) -> std::result::Result<(), BackendError> {
 	let vm_sfd = cfg.vm_sfd.as_ref().expect(&format!("{}:{}", file!(), line!()));
-	let reserved_mem_size = unsafe { ioctl_with_ref(vm_sfd, GH_VM_GET_RESV_MEMORY_SIZE(), &fw_name) };
+	let reserved_mem_size = unsafe { ioctl_with_ref(vm_sfd, GH_VM_GET_RESV_MEMORY_SIZE, &fw_name) };
 	if reserved_mem_size < 0 {
 		return Err(BackendError::StrNumError {
 			err: String::from("Get reserved mem size failed"),
@@ -888,7 +888,7 @@ fn set_user_memory_region(cfg: &mut BackendConfig, vm_name: String, fw_name: fw_
 		fw_name: fw_name
 	};
 
-	let ret = unsafe { ioctl_with_ref(vm_sfd, GH_VM_SET_USER_MEM_REGION(), &guest_mem_desc) };
+	let ret = unsafe { ioctl_with_ref(vm_sfd, GH_VM_SET_USER_MEM_REGION, &guest_mem_desc) };
 	if ret != 0 {
 		return Err(BackendError::StrNumError {
 			err: String::from("set user mem region failed"),
@@ -913,7 +913,7 @@ fn run_backend_v2(cfg: &mut BackendConfig, file_name: String) -> std::result::Re
 	let sfd = cfg.sfd.as_mut().expect(&format!("{}:{}", file!(), line!())).try_clone()
 	                          .expect(&format!("{}:{}", file!(), line!()));
 
-	let vm_fd = unsafe { libc::ioctl(sfd.as_raw_descriptor(), GH_CREATE_VM()) };
+	let vm_fd = unsafe { libc::ioctl(sfd.as_raw_descriptor(), GH_CREATE_VM) };
 	if vm_fd < 0 {
 		error!("{}", format!("Error: create vm ioctl failed with error {:?}", io::Error::last_os_error()));
 		panic!("{}", format!("Error: create vm ioctl failed with error {:?}", io::Error::last_os_error()));
@@ -934,13 +934,13 @@ fn run_backend_v2(cfg: &mut BackendConfig, file_name: String) -> std::result::Re
 	}
 
 	let vm_sfd = cfg.vm_sfd.as_ref().expect(&format!("{}:{}", file!(), line!()));
-	let ret = unsafe { ioctl_with_ref(vm_sfd, GH_VM_SET_FW_NAME(), &fw_name) };
+	let ret = unsafe { ioctl_with_ref(vm_sfd, GH_VM_SET_FW_NAME, &fw_name) };
 	if ret != 0 {
 		error!("{}", format!("Error: set fw name ioctl failed with error {:?}", io::Error::last_os_error()));
 		panic!("{}", format!("Error: set fw name ioctl failed with error {:?}", io::Error::last_os_error()));
 	}
 
-	let vcpu_count = unsafe { libc::ioctl(vm_fd, GH_GET_VCPU_COUNT()) };
+	let vcpu_count = unsafe { libc::ioctl(vm_fd, GH_GET_VCPU_COUNT) };
 	if vcpu_count < 0 || vcpu_count > (GH_VCPU_MAX).try_into().expect(&format!("{}:{}", file!(), line!())) {
 		error!("{}", format!("Error: get vcpu count ioctl failed {:?}", io::Error::last_os_error()));
 		panic!("{}", format!("Error: get vcpu count ioctl failed {:?}", io::Error::last_os_error()));
@@ -950,7 +950,7 @@ fn run_backend_v2(cfg: &mut BackendConfig, file_name: String) -> std::result::Re
 
 	if !cfg.vdisks.is_empty() || cfg.vsock.enable {
 		let mut shmem_size: u64 = 0;
-		let ret = unsafe { ioctl_with_mut_ref(vm_sfd, GET_SHARED_MEMORY_SIZE_V2(), &mut shmem_size) };
+		let ret = unsafe { ioctl_with_mut_ref(vm_sfd, GET_SHARED_MEMORY_SIZE_V2, &mut shmem_size) };
 		if ret != 0 || shmem_size == 0 {
 			error!("{}", format!("Error: get vm shared memory size ioctl failed {:?}", io::Error::last_os_error()));
 			panic!("{}", format!("Error: get vm shared memory size ioctl failed {:?}", io::Error::last_os_error()));
@@ -1061,7 +1061,7 @@ fn run_backend_v1(cfg: &mut BackendConfig) -> std::result::Result<(), ()>
 	let sfd = cfg.sfd.as_mut().expect(&format!("{}:{}", file!(), line!())).try_clone()
 	          .expect(&format!("{}:{}", file!(), line!()));
 	let mut shmem_size: u64 = 0;
-	let ret = unsafe { ioctl_with_mut_ref(&sfd, GET_SHARED_MEMORY_SIZE_V1(), &mut shmem_size) };
+	let ret = unsafe { ioctl_with_mut_ref(&sfd, GET_SHARED_MEMORY_SIZE_V1, &mut shmem_size) };
 	if ret != 0 || shmem_size == 0 {
 		error!("{}", format!("Error: GET_SHARED_MEMORY_SIZE ioctl failed {:?}", io::Error::last_os_error()));
 		panic!("{}", format!("Error: GET_SHARED_MEMORY_SIZE ioctl failed {:?}", io::Error::last_os_error()));
@@ -1097,7 +1097,7 @@ fn run_backend_v1(cfg: &mut BackendConfig) -> std::result::Result<(), ()>
 		blk_thread_handles.push(handle);
 	}
 
-	let ret = unsafe { libc::ioctl(sfd.as_raw_descriptor(), SET_APP_READY_V1(), 0) };
+	let ret = unsafe { libc::ioctl(sfd.as_raw_descriptor(), SET_APP_READY_V1, 0) };
 	assert!(ret == 0, "{}:{}:ret={}, {}", file!(), line!(), ret, io::Error::last_os_error());
 
 	let vm_name = cfg.vm.as_ref().expect(&format!("{}:{}", file!(), line!()));
