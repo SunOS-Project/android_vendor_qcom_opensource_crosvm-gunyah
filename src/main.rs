@@ -384,7 +384,7 @@ fn new_from_rawfd(ranges: &[(GuestAddress, u64)], fd: &RawFd) -> std::result::Re
 
         for range in ranges {
             if range.1 % pg_size as u64 != 0 {
-                return Err(GuestMemoryError::MemoryNotAligned);
+                return Err(GuestMemoryError::MemoryNotAligned(range.0, range.1));
             }
 	    let file = Arc::new(unsafe { File::from_raw_fd(*fd) });
 	    let region = MemoryRegion::new_from_file(range.1, range.0, offset, file)
@@ -409,7 +409,7 @@ fn raw_fd_from_path(path: &Path) -> std::result::Result<RawFd, ()> {
         .and_then(|fd_str| fd_str.parse::<c_int>().ok())
         .ok_or(())?;
 
-    validate_raw_fd(raw_fd).map_err(|_e| {()})
+    validate_raw_fd(&raw_fd).map_err(|_e| {()})
 }
 
 fn create_bdev(disk: &DiskOption, q_size: Option<u16>) -> std::result::Result<Box<BlockAsync>, BackendError> {
