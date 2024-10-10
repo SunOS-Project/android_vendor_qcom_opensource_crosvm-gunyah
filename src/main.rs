@@ -440,10 +440,19 @@ fn create_bdev(disk: &DiskOption, q_size: Option<u16>) -> std::result::Result<Bo
 				val: io::Error::last_os_error(),
 			})?;
 
-	let disk_file = disk::create_disk_file(raw_image, false, disk::MAX_NESTING_DEPTH, Path::new(&disk.path)).map_err(|_| BackendError::StrNumError {
-				err: String::from("create_disk_file failed"),
-				val: io::Error::last_os_error(),
-				})?;
+	let disk_file = disk::open_disk_file(disk::DiskFileParams {
+		path: PathBuf::from(disk.path.clone()),
+		is_read_only: disk.read_only,
+		is_sparse_file: disk.sparse,
+		is_overlapped: false,
+		is_direct: disk.direct,
+		lock: true,
+		depth: 0,
+	})
+	.map_err(|_| BackendError::StrNumError {
+		err: String::from("create_disk_file failed"),
+		val: io::Error::last_os_error(),
+		})?;
 
 	let dev = virtio::BlockAsync::new(
 		base_features(ProtectionType::Protected),
@@ -1264,6 +1273,7 @@ fn set_argument(cfg: &mut BackendConfig, name: &str, value: Option<&str>) -> arg
 				root: false,
 				sparse: true,
 				direct: false,
+				lock: true,
 				block_size: 512,
 				id: None,
 				multiple_workers: false,
