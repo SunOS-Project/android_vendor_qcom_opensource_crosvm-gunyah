@@ -446,7 +446,7 @@ fn create_bdev(disk: &DiskOption, q_size: Option<u16>) -> std::result::Result<Bo
 		is_sparse_file: disk.sparse,
 		is_overlapped: false,
 		is_direct: disk.direct,
-		lock: true,
+		lock: false,
 		depth: 0,
 	})
 	.map_err(|_| BackendError::StrNumError {
@@ -1273,7 +1273,7 @@ fn set_argument(cfg: &mut BackendConfig, name: &str, value: Option<&str>) -> arg
 				root: false,
 				sparse: true,
 				direct: false,
-				lock: true,
+				lock: false,
 				block_size: 512,
 				id: None,
 				multiple_workers: false,
