@@ -1,0 +1,11 @@
+
+rust_binary {
+    name: "qvirtservice_testclient",
+    product_specific: true,
+    srcs: ["test_client.rs"],
+    rustlibs: [
+        "vendor.qti.qvirt-V2-rust",
+        "liblogger",
+        "liblog_rust",
+    ],
+}

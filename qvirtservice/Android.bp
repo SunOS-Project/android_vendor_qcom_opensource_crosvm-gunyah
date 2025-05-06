@@ -1,0 +1,64 @@
+cc_binary{
+    name: "vendor.qti.qvirt-service",
+    init_rc: ["vendor.qti.qvirt-service.rc"],
+    product_specific: true,
+    srcs: [
+        "src/VirtualizationService.cpp",
+        "src/VirtualMachine.cpp",
+        "src/main.cpp",
+    ],
+    vintf_fragments: ["vendor.qti.qvirt-service.xml"],
+    shared_libs: [
+        "libbase",
+        "liblog",
+        "libjsoncpp",
+        "libcutils",
+        "libbinder_ndk",
+        "vendor.qti.qvirt-V1-ndk",
+    ],
+
+}
+
+rust_bindgen {
+    name: "libuevent_bindgen",
+    wrapper_src: "rs_src/bindgen/uevent.h",
+    crate_name: "uevent_bindgen",
+    source_stem: "bindings",
+    header_libs: ["libcutils_headers"],
+    bindgen_flags: [
+        "--allowlist-function", "uevent_open_socket",
+        "--allowlist-function", "uevent_kernel_multicast_recv",
+    ],
+    product_available: true,
+}
+
+rust_binary {
+    name: "vendor.qti.qvirt-service_rs",
+    product_specific: true,
+    srcs: [
+        "rs_src/main.rs",
+    ],
+    vintf_fragments: ["vendor.qti.qvirt-service.xml"],
+    init_rc: ["vendor.qti.qvirt-service_rs.rc"],
+    rustlibs: [
+        "liblogger",
+        "liblog_rust",
+        "libbinder_rs",
+        "libnix",
+        "libserde",
+        "libserde_json",
+        "liblibc",
+        "librustutils",
+        "vendor.qti.qvirt-V2-rust",
+        "vendor.qti.qvirtvendor-V1-rust",
+    ],
+    rlibs: [
+        "libuevent_bindgen",
+    ],
+    shared_libs: [
+        "libcutils",
+    ],
+    proc_macros: [
+        "libserde_derive",
+    ],
+}
